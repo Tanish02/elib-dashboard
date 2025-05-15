@@ -2,14 +2,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRef } from "react";
 import { Link } from "react-router";
 
 const LoginPage = () => {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleLoginSubmit = () => {
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
+    console.log("Login attempt:", { email, password });
+
+    // server call
+  };
   return (
     <section className="flex justify-center items-center h-screen">
       <Card className="w-[380px] shadow-xl">
         {" "}
-        {/* 🔧 Adjusted card width */}
         <CardContent className="p-6 md:p-8">
           <form className="flex flex-col gap-6">
             <div className="text-center">
@@ -22,6 +32,7 @@ const LoginPage = () => {
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
+                ref={emailRef}
                 id="email"
                 type="email"
                 placeholder="m@example.com"
@@ -39,10 +50,14 @@ const LoginPage = () => {
                   Forgot your password?
                 </a>
               </div>
-              <Input id="password" type="password" required />
+              <Input ref={passwordRef} id="password" type="password" required />
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button
+              onClick={handleLoginSubmit}
+              type="submit"
+              className="w-full"
+            >
               Login
             </Button>
 
@@ -110,7 +125,10 @@ const LoginPage = () => {
 
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
-              <Link to={"/register"} className="underline underline-offset-4">
+              <Link
+                to={"/auth/register"}
+                className="underline underline-offset-4"
+              >
                 Sign up
               </Link>
             </div>
