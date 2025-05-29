@@ -3,7 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/http/api";
+// import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
+import { LoaderPinwheel } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // <-- use react-router-dom
 
@@ -51,7 +53,8 @@ const LoginPage = () => {
             <div className="text-center">
               <h1 className="text-2xl font-bold">Welcome back</h1>
               <p className="text-muted-foreground">
-                Welcome & Login to your account
+                Enter your email to Login to your account
+                {mutation.isPending && <div>Loading...</div>}
               </p>
             </div>
 
@@ -79,8 +82,16 @@ const LoginPage = () => {
               <Input ref={passwordRef} id="password" type="password" required />
             </div>
 
-            <Button type="submit" className="w-full">
-              Login
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending && (
+                <LoaderPinwheel className="animate-spin" />
+              )}
+
+              <span className="ml-3"> Login </span>
             </Button>
 
             <div className="relative text-center text-sm">
