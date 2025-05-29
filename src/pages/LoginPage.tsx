@@ -53,8 +53,13 @@ const LoginPage = () => {
             <div className="text-center">
               <h1 className="text-2xl font-bold">Welcome back</h1>
               <p className="text-muted-foreground">
-                Enter your email to Login to your account
-                {mutation.isPending && <div>Loading...</div>}
+                Enter your email to Login to your account <br />
+                {mutation.isError && (
+                  <span className="text-red-500 text-sm">
+                    {"Error while login. Please try again."}
+                  </span>
+                )}
+                {/* {mutation.isPending && <div>Loading...</div>} */}
               </p>
             </div>
 
