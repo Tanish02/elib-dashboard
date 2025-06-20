@@ -88,6 +88,7 @@ const LoginPage = () => {
             </div>
 
             <Button
+              onClick={handleLoginSubmit}
               type="submit"
               className="w-full"
               disabled={mutation.isPending}
@@ -95,7 +96,6 @@ const LoginPage = () => {
               {mutation.isPending && (
                 <LoaderPinwheel className="animate-spin" />
               )}
-
               <span className="ml-3"> Login </span>
             </Button>
 
@@ -121,6 +121,7 @@ const LoginPage = () => {
                 className="flex justify-center items-center"
               >
                 <span className="sr-only">Login with Google</span>
+                :Google:
               </Button>
               <Button
                 variant="outline"
