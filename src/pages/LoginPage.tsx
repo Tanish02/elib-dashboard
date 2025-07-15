@@ -3,26 +3,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/http/api";
+import useTokenStore from "@/store";
 // import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { LoaderPinwheel } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // <-- use react-router-dom
+import type { AxiosResponse } from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const setToken = useTokenStore((state) => state.setToken);
+
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const mutation = useMutation({
+  interface LoginResponse {
+    accessToken: string;
+  }
+
+  const mutation = useMutation<
+    AxiosResponse<LoginResponse>,
+    Error,
+    { email: string; password: string }
+  >({
     mutationFn: login,
-    onSuccess: () => {
-      console.log("Login success");
+    onSuccess: (response) => {
+      console.log("Login success", response);
+      setToken(response.data.accessToken);
       navigate("/dashboard/home");
     },
     onError: (error) => {
       console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      alert("Login failed. Please check your details.");
     },
   });
 
@@ -70,6 +83,7 @@ const LoginPage = () => {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
+                autoComplete="email"
                 required
               />
             </div>
@@ -84,7 +98,13 @@ const LoginPage = () => {
                   Forgot your password?
                 </a>
               </div>
-              <Input ref={passwordRef} id="password" type="password" required />
+              <Input
+                ref={passwordRef}
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
             </div>
 
             <Button
