@@ -8,24 +8,36 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Register } from "@/http/api";
+import useTokenStore from "@/store";
 import { Label } from "@radix-ui/react-label";
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosResponse } from "@tanstack/react-query";
 import { LoaderPinwheel } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
 
 /////
 const RegisterPage = () => {
+  const setToken = useTokenStore((state) => state.setToken);
   const navigate = useNavigate();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const mutation = useMutation({
+  interface AuthResponse {
+    accessToken: string;
+  }
+
+  const mutation = useMutation<
+    AxiosResponse<AuthResponse>,
+    Error,
+    { name: string; email: string; password: string }
+  >({
     mutationFn: Register,
-    onSuccess: () => {
+    onSuccess: (response) => {
       console.log("Login success");
+      setToken(response.data.accessToken);
       navigate("/dashboard/home");
     },
     onError: (error) => {

@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LoaderPinwheel } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // <-- use react-router-dom
-import type { AxiosResponse } from "axios";
+import type { AxiosResponse } from "@tanstack/react-query";
 
 const LoginPage = () => {
   const navigate = useNavigate();
