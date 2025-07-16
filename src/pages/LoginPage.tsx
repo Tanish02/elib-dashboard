@@ -81,6 +81,7 @@ const LoginPage = () => {
               <Input
                 ref={emailRef}
                 id="email"
+                name="email"
                 type="email"
                 placeholder="m@example.com"
                 autoComplete="email"
@@ -101,6 +102,7 @@ const LoginPage = () => {
               <Input
                 ref={passwordRef}
                 id="password"
+                name="password"
                 type="password"
                 autoComplete="current-password"
                 required
