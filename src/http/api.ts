@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Book } from "types";
 
 const api = axios.create({
   // move this to a .env file (todo)
@@ -16,5 +17,7 @@ export const Register = async (data: {
   email: string;
   password: string;
 }) => api.post("/users/Register", data);
+
+export const getBooks = () => api.get<Book[]>("/books");
 
 // end code
