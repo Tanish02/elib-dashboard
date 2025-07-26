@@ -7,12 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Register } from "@/http/api";
+import { register } from "@/http/api";
 import useTokenStore from "@/store";
 import { Label } from "@radix-ui/react-label";
 import { useMutation } from "@tanstack/react-query";
-import type { AxiosResponse } from "@tanstack/react-query";
-import { LoaderPinwheel } from "lucide-react";
+import { AxiosResponse } from "axios";
+import { LoaderPinwheel, Github } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
 
@@ -34,7 +34,7 @@ const RegisterPage = () => {
     Error,
     { name: string; email: string; password: string }
   >({
-    mutationFn: Register,
+    mutationFn: register,
     onSuccess: (response) => {
       console.log("Login success");
       setToken(response.data.accessToken);
@@ -112,6 +112,7 @@ const RegisterPage = () => {
             </Button>
 
             <Button variant="outline" className="w-full">
+              <Github className="mr-2 h-4 w-4" />
               Sign up with GitHub
             </Button>
           </div>

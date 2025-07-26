@@ -1,5 +1,6 @@
 import axios from "axios";
-import type { Book } from "types";
+import type { Book } from "../../types";
+import useTokenStore from "@/store";
 
 const api = axios.create({
   // move this to a .env file (todo)
@@ -9,15 +10,33 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = useTokenStore.getState().token;
+
+  if (token) {
+    config.headers ??= {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 export const login = async (data: { email: string; password: string }) =>
   api.post("/users/login", data);
 
-export const Register = async (data: {
+export const register = async (data: {
   name: string;
   email: string;
   password: string;
-}) => api.post("/users/Register", data);
+}) => api.post("/users/register", data);
 
 export const getBooks = () => api.get<Book[]>("/books");
 
-// end code
+export const createBook = async (data: FormData) =>
+  api.post("/books", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+/// end code

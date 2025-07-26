@@ -8,7 +8,7 @@ export interface Book {
   title: string;
   description: string;
   genre: string;
-  author: Author;
+  author: string;
   coverImage: string;
   file: string;
   createdAt: string;
