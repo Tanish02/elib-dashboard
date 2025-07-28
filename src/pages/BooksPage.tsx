@@ -144,7 +144,9 @@ const BooksPage = () => {
                           <Link to={`/dashboard/books/edit/${book._id}`}>
                             <DropdownMenuItem>Edit</DropdownMenuItem>
                           </Link>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <Link to={`/dashboard/books/delete/${book._id}`}>
+                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                          </Link>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
