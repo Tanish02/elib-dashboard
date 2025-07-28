@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getBooks, getUsers } from "@/http/api";
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
@@ -23,13 +23,12 @@ const HomePage = () => {
           const userData = usersResponse.data as unknown[];
           setTotalUsers(userData.length);
         } catch {
-          // If users endpoint doesn't exist, use mock data
-          setTotalUsers(1234);
+          /////////////  total users numbers endpoint doesn't exist mock data  ❌
+          setTotalUsers("12345");
         }
       } catch {
-        // Set mock data for demonstration
         setTotalBooks(156);
-        setTotalUsers(1234);
+        setTotalUsers("12345");
       } finally {
         setLoading(false);
       }
@@ -48,7 +47,7 @@ const HomePage = () => {
         <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
       </div>
       <div className="grid gap-4 md:grid-cols-3 mb-6">
-        ////////////////// Total Books in home page display
+        {/* ////////////////// Total Books in home page display */}
         <div className="bg-black text-white rounded-lg p-6 shadow-lg">
           <div className="flex flex-col">
             <h3 className="text-sm font-medium text-gray-300 mb-2">
@@ -62,7 +61,7 @@ const HomePage = () => {
             </p>
           </div>
         </div>
-        /////////////////// Total Users
+        {/* /////////////////// Total Users */}
         <div className="bg-black text-white rounded-lg p-6 shadow-lg">
           <div className="flex flex-col">
             <h3 className="text-sm font-medium text-gray-300 mb-2">
@@ -76,7 +75,7 @@ const HomePage = () => {
             </p>
           </div>
         </div>
-        /////////////// Coming Soon
+        {/* /////////////// Coming Soon */}
         <div className="bg-black text-white rounded-lg p-6 shadow-lg">
           <div className="flex flex-col">
             <h3 className="text-sm font-medium text-gray-300 mb-2">
@@ -89,10 +88,12 @@ const HomePage = () => {
       </div>
 
       <div className="flex justify-center mt-8">
-        <Button>
-          <CirclePlus size={20} />
-          <span className="ml-2">Add Book</span>
-        </Button>
+        <Link to="/dashboard/books/create">
+          <Button>
+            <CirclePlus size={20} />
+            <span className="ml-2">Add Book</span>
+          </Button>
+        </Link>
       </div>
     </>
   );

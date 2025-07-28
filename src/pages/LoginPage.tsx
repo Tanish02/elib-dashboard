@@ -6,7 +6,7 @@ import { login } from "@/http/api";
 import useTokenStore from "@/store";
 // import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { LoaderPinwheel } from "lucide-react";
+import { Apple, AtSign, Github, LoaderPinwheel } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; // <-- use react-router-dom
 import type { AxiosResponse } from "@tanstack/react-query";
@@ -136,20 +136,22 @@ const LoginPage = () => {
                 className="flex justify-center items-center"
               >
                 <span className="sr-only">Login with Apple</span>
-                🍎
+                <Apple />
               </Button>
+
               <Button
                 variant="outline"
                 className="flex justify-center items-center"
               >
                 <span className="sr-only">Login with Google</span>
-                :Google:
+                <AtSign />
               </Button>
               <Button
                 variant="outline"
                 className="flex justify-center items-center"
               >
                 <span className="sr-only">Login with Meta</span>
+                <Github />
               </Button>
             </div>
 

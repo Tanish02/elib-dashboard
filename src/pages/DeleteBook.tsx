@@ -17,15 +17,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { deleteBook, getBook } from "@/http/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { LoaderPinwheel, Trash, ArrowLeft } from "lucide-react";
+import { useState } from "react";
 
 const DeleteBook = () => {
   const navigate = useNavigate();
   const { bookId } = useParams<{ bookId: string }>();
   const queryClient = useQueryClient();
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  console.log("DeleteBook component rendered");
+  console.log("Book ID from params:", bookId);
 
   const {
     data: bookData,
@@ -34,40 +52,88 @@ const DeleteBook = () => {
   } = useQuery({
     queryKey: ["book", bookId],
     queryFn: async () => {
-      if (!bookId) throw new Error("Book ID is required");
+      console.log("Fetching book data for ID:", bookId);
+      if (!bookId) {
+        console.error("Book ID is required for fetching book data");
+        throw new Error("Book ID is required");
+      }
       const response = await getBook(bookId);
+      console.log("Book data fetched successfully:", response.data);
       return response.data;
     },
     enabled: !!bookId,
   });
 
+  // Log query state changes
+  console.log(
+    "Query state - isLoading:",
+    isLoading,
+    "isError:",
+    isError,
+    "bookData:",
+    bookData
+  );
+
   const mutation = useMutation({
-    mutationFn: () => {
-      if (!bookId) throw new Error("Book ID is required");
-      return deleteBook(bookId);
+    mutationFn: async () => {
+      console.log("Starting delete mutation for book ID:", bookId);
+      if (!bookId) {
+        console.error("Book ID is required for deletion");
+        throw new Error("Book ID is required");
+      }
+      console.log("Calling deleteBook API...");
+      const response = await deleteBook(bookId);
+      console.log("Delete API response:", response);
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Book deleted successfully:", data);
+      console.log("Invalidating books query cache...");
       queryClient.invalidateQueries({ queryKey: ["books"] });
-      navigate("/dashboard/books");
+      console.log("Showing success dialog...");
+      setShowSuccessDialog(true);
+    },
+    onError: (error) => {
+      console.error("Error deleting book:", error);
+      console.log("Setting error message and showing error dialog...");
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete book. Please try again."
+      );
+      setShowErrorDialog(true);
     },
   });
 
   const handleDelete = () => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this book? This action cannot be undone."
-    );
-    if (confirmDelete) {
-      mutation.mutate();
-    }
+    console.log("Delete button clicked");
+    console.log("Starting mutation...");
+    mutation.mutate();
+  };
+
+  const handleSuccessDialogClose = () => {
+    console.log("Success dialog closed, navigating to books page...");
+    setShowSuccessDialog(false);
+    navigate("/dashboard/books");
+  };
+
+  const handleErrorDialogClose = () => {
+    console.log("Error dialog closed");
+    setShowErrorDialog(false);
+    setErrorMessage("");
   };
 
   if (isLoading) {
+    console.log("Rendering loading state");
     return <div>Loading Book...</div>;
   }
 
   if (isError) {
+    console.log("Rendering error state");
     return <div>Error fetching Book</div>;
   }
+
+  console.log("Rendering main component with book data:", bookData);
 
   return (
     <section>
@@ -95,11 +161,33 @@ const DeleteBook = () => {
             </Button>
           </Link>
 
-          <Button onClick={handleDelete} disabled={mutation.isPending}>
-            <Trash />
-            {mutation.isPending && <LoaderPinwheel className="animate-spin" />}
-            <span className="ml-2">Delete</span>
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button disabled={mutation.isPending}>
+                <Trash />
+                {mutation.isPending && (
+                  <LoaderPinwheel className="animate-spin" />
+                )}
+                <span className="ml-2">Delete</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  book "{bookData?.title}" and remove all associated data
+                  including the cover image and book file.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="">
+                  Delete Book
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
@@ -199,14 +287,48 @@ const DeleteBook = () => {
                 </h3>
                 <p className="mt-1 text-sm text-red-700">
                   Deleting this book will permanently remove it from the system.
-                  All associated data including the cover image and book file
-                  will be lost.
                 </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Success Dialog */}
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Book Deleted Successfully</AlertDialogTitle>
+            <AlertDialogDescription>
+              The book "{bookData?.title}" has been permanently deleted from the
+              system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleSuccessDialogClose}>
+              Go to Books
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Error Dialog */}
+      <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Failed</AlertDialogTitle>
+            <AlertDialogDescription>
+              {errorMessage ||
+                "An error occurred while trying to delete the book. Please try again."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleErrorDialogClose}>
+              Try Again
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };
