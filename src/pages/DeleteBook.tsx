@@ -1,3 +1,11 @@
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,14 +14,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { deleteBook, getBook } from "@/http/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { LoaderPinwheel, Trash, ArrowLeft } from "lucide-react";
 
 const DeleteBook = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const { bookId } = useParams<{ bookId: string }>();
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     data: bookData,
@@ -21,45 +33,182 @@ const DeleteBook = () => {
     isError,
   } = useQuery({
     queryKey: ["book", bookId],
-    queryFn: () => getBook(bookId!),
+    queryFn: async () => {
+      if (!bookId) throw new Error("Book ID is required");
+      const response = await getBook(bookId);
+      return response.data;
+    },
     enabled: !!bookId,
   });
 
   const mutation = useMutation({
-    mutationFn: () => deleteBook(bookId!),
+    mutationFn: () => {
+      if (!bookId) throw new Error("Book ID is required");
+      return deleteBook(bookId);
+    },
     onSuccess: () => {
-      QueryClient.invalidateQueries({ queryKey: ["books"] });
-      Navigate("/dashboard/books");
+      queryClient.invalidateQueries({ queryKey: ["books"] });
+      navigate("/dashboard/books");
     },
   });
 
   const handleDelete = () => {
-    const confirmDelete = confirm("Are you sure you want to delete this book?");
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this book? This action cannot be undone."
+    );
     if (confirmDelete) {
       mutation.mutate();
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading book.</div>;
+  if (isLoading) {
+    return <div>Loading book data...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching book data</div>;
+  }
 
   return (
     <section>
-      <Card>
+      <div className="flex items-center justify-between">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard/books">Books</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Delete</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard/books">
+            <Button variant={"outline"}>
+              <ArrowLeft />
+              <span className="ml-2">Cancel</span>
+            </Button>
+          </Link>
+
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={mutation.isPending}
+          >
+            <Trash />
+            {mutation.isPending && <LoaderPinwheel className="animate-spin" />}
+            <span className="ml-2">Delete Book</span>
+          </Button>
+        </div>
+      </div>
+
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle>Delete Book</CardTitle>
           <CardDescription>
-            Are you sure you want to delete this book
-            <strong>{bookData.title}</strong>?
+            Review the book details below. Once deleted, this action cannot be
+            undone.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex gap-4">
-          <Button variant="destructive" onClick={handleDelete}>
-            Delete
-          </Button>
-          <Link to="/dashboard/books">
-            <Button variant="outline">Discard</Button>
-          </Link>
+        <CardContent>
+          <div className="grid gap-6">
+            <div>
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                type="text"
+                className="w-full"
+                value={bookData?.title || ""}
+                readOnly
+                disabled
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="author">Author</Label>
+              <Input
+                id="author"
+                type="text"
+                className="w-full"
+                value={bookData?.author || ""}
+                readOnly
+                disabled
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="genre">Genre</Label>
+              <Input
+                id="genre"
+                type="text"
+                className="w-full"
+                value={bookData?.genre || ""}
+                readOnly
+                disabled
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                className="min-h-32"
+                value={bookData?.description || ""}
+                readOnly
+                disabled
+              />
+            </div>
+
+            {bookData?.coverImage && (
+              <div>
+                <Label>Cover Image</Label>
+                <div className="mt-2">
+                  <img
+                    src={bookData.coverImage}
+                    alt={`Cover of ${bookData.title}`}
+                    className="max-w-xs max-h-48 object-cover rounded-md border"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="createdAt">Created At</Label>
+              <Input
+                id="createdAt"
+                type="text"
+                className="w-full"
+                value={
+                  bookData?.createdAt
+                    ? new Date(bookData.createdAt).toLocaleDateString()
+                    : ""
+                }
+                readOnly
+                disabled
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex items-start">
+              <Trash className="h-5 w-5 text-red-600 mt-0.5" />
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Warning: This action is irreversible
+                </h3>
+                <p className="mt-1 text-sm text-red-700">
+                  Deleting this book will permanently remove it from the system.
+                  All associated data including the cover image and book file
+                  will be lost.
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </section>
@@ -67,5 +216,3 @@ const DeleteBook = () => {
 };
 
 export default DeleteBook;
-
-// end code
