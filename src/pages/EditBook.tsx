@@ -254,9 +254,7 @@ const EditBook = () => {
                   name="coverImage"
                   render={() => (
                     <FormItem>
-                      <FormLabel>
-                        Cover Image (Optional - leave empty to keep current)
-                      </FormLabel>
+                      <FormLabel>Cover Image</FormLabel>
                       <FormControl>
                         <Input
                           type="file"
@@ -274,9 +272,7 @@ const EditBook = () => {
                   name="file"
                   render={() => (
                     <FormItem>
-                      <FormLabel>
-                        Book File (Optional - leave empty to keep current)
-                      </FormLabel>
+                      <FormLabel>Book File</FormLabel>
                       <FormControl>
                         <Input type="file" className="w-full" {...fileRef} />
                       </FormControl>

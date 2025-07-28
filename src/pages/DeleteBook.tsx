@@ -62,11 +62,11 @@ const DeleteBook = () => {
   };
 
   if (isLoading) {
-    return <div>Loading book data...</div>;
+    return <div>Loading Book...</div>;
   }
 
   if (isError) {
-    return <div>Error fetching book data</div>;
+    return <div>Error fetching Book</div>;
   }
 
   return (
@@ -91,18 +91,14 @@ const DeleteBook = () => {
           <Link to="/dashboard/books">
             <Button variant={"outline"}>
               <ArrowLeft />
-              <span className="ml-2">Cancel</span>
+              <span className="ml-2">Discard</span>
             </Button>
           </Link>
 
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={mutation.isPending}
-          >
+          <Button onClick={handleDelete} disabled={mutation.isPending}>
             <Trash />
             {mutation.isPending && <LoaderPinwheel className="animate-spin" />}
-            <span className="ml-2">Delete Book</span>
+            <span className="ml-2">Delete</span>
           </Button>
         </div>
       </div>

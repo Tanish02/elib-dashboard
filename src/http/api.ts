@@ -52,4 +52,8 @@ export const updateBook = async (bookId: string, data: FormData) =>
 export const deleteBook = async (bookId: string) =>
   api.delete(`/books/${bookId}`);
 
+export const getDashboardStats = async () => api.get("/dashboard/stats");
+
+export const getUsers = async () => api.get("/users");
+
 /// end code
