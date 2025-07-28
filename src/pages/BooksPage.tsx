@@ -141,7 +141,9 @@ const BooksPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <Link to={`/dashboard/books/edit/${book._id}`}>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                          </Link>
                           <DropdownMenuItem>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

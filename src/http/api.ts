@@ -39,4 +39,14 @@ export const createBook = async (data: FormData) =>
     },
   });
 
+export const getBook = async (bookId: string) =>
+  api.get<Book>(`/books/${bookId}`);
+
+export const updateBook = async (bookId: string, data: FormData) =>
+  api.patch(`/books/${bookId}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
 /// end code
