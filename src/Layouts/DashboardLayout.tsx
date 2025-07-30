@@ -34,17 +34,16 @@ import {
 import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
 
 const DashboardLayout = () => {
-  const { token, setToken } = useTokenStore((state) => state);
+  const { token, logout } = useTokenStore((state) => state);
   //
   if (token === "") {
     return <Navigate to={"/auth/login"} replace />;
   }
 
-  // clearing token from local storage for logout
-  // and setting token state to empty string
-  const logout = () => {
+  // Handle logout with proper cleanup
+  const handleLogout = () => {
     console.log("Logging out...");
-    setToken("");
+    logout();
   };
 
   return (
@@ -209,7 +208,7 @@ const DashboardLayout = () => {
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Button onClick={logout} variant={"default"}>
+                <Button onClick={handleLogout} variant={"default"}>
                   Logout
                 </Button>
               </DropdownMenuItem>
