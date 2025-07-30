@@ -31,19 +31,21 @@ import {
   ShoppingCart,
   Users,
 } from "lucide-react";
-import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
+import { Link, Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 
 const DashboardLayout = () => {
   const { token, logout } = useTokenStore((state) => state);
+  const navigate = useNavigate;
   //
   if (token === "") {
     return <Navigate to={"/auth/login"} replace />;
   }
 
-  // Handle logout with proper cleanup
+  // logout
   const handleLogout = () => {
     console.log("Logging out...");
     logout();
+    window.location.href = import.meta.env.VITE_FRONTEND_URL;
   };
 
   return (

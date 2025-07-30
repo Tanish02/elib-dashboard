@@ -150,7 +150,7 @@ const LoginPage = () => {
                 variant="outline"
                 className="flex justify-center items-center"
               >
-                <span className="sr-only">Login with Meta</span>
+                <span className="sr-only">Login with Github</span>
                 <Github />
               </Button>
             </div>

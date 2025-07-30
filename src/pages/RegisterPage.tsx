@@ -36,12 +36,12 @@ const RegisterPage = () => {
   >({
     mutationFn: register,
     onSuccess: (response) => {
-      console.log("Login success");
+      console.log("Registration success");
       setToken(response.data.accessToken);
       navigate("/dashboard/home");
     },
     onError: (error) => {
-      console.error("Login failed:", error);
+      console.error("Registration failed:", error);
       alert("Login failed. Please check your credentials.");
     },
   });
@@ -56,7 +56,7 @@ const RegisterPage = () => {
       return;
     }
 
-    console.log("Login attempt:", { name, email, password });
+    console.log("Registration attempt:", { name, email, password });
     mutation.mutate({ name, email, password });
   };
 
